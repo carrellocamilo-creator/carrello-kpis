@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carrello KPIs Q2 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;font-family:system-ui,sans-serif;background:#F1F5F9;color:#0F172A;font-size:14px}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#EFF6FF,#F0FDF4)}
+.lcard{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:300px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.llogo{font-size:26px;font-weight:800;color:#0F172A;letter-spacing:-1px;margin-bottom:2px}
+.llogo em{color:#16A34A;font-style:normal}
+.lsub{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:1.5rem}
+.pdots{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem}
+.pdot{width:14px;height:14px;border-radius:50%;border:2px solid #E2E8F0;background:#F8FAFC;transition:all .15s}
+.pdot.on{background:#16A34A;border-color:#16A34A}
+.pdot.err{background:#EF4444;border-color:#EF4444}
+.kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.kbtn{padding:14px;border-radius:10px;border:1px solid #E2E8F0;background:#F8FAFC;font-size:18px;font-weight:700;cursor:pointer;color:#0F172A}
+.kbtn:active{background:#E2E8F0}
+.kbtn.del{font-size:13px;color:#94A3B8}
+.kbtn.empty{background:transparent;border:none}
+.lmsg{font-size:11px;color:#94A3B8;min-height:16px}
+.lmsg.err{color:#EF4444}
+
+#app{display:none;min-height:100vh;flex-direction:column}
+#app.on{display:flex}
+.topbar{background:#fff;border-bottom:1px solid #E2E8F0;padding:.6rem 1.25rem;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.tbrand{font-size:15px;font-weight:800;color:#0F172A}
+.tbrand em{color:#16A34A;font-style:normal}
+.tsep{width:1px;height:16px;background:#E2E8F0}
+.tc-box{display:flex;align-items:center;gap:4px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:7px;padding:3px 8px}
+.tc-lbl{font-size:10px;font-weight:700;color:#C2410C}
+.tc-inp{width:64px;border:none;background:transparent;font-size:12px;font-weight:700;color:#0F172A;outline:none;text-align:right}
+.tbright{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.btn{padding:5px 11px;border-radius:7px;border:1px solid #E2E8F0;background:#F8FAFC;font-size:11px;font-weight:600;cursor:pointer;color:#475569}
+.btn:hover{border-color:#CBD5E1;background:#F1F5F9}
+.btn-edit{border-color:#FBBF24;background:#FFFBEB;color:#92400E}
+.btn-edit.on{background:#FEF3C7;border-color:#F59E0B}
+.btn-save{border-color:#16A34A;background:#F0FDF4;color:#166534}
+.btn-report{border-color:#6366F1;background:#EEF2FF;color:#3730A3}
+.btn-share{border-color:#0EA5E9;background:#F0F9FF;color:#0C4A6E}
+.btn-danger{border-color:#FCA5A5;background:#FFF5F5;color:#991B1B}
+
+.uhead{background:#fff;border-bottom:1px solid #E2E8F0;padding:.875rem 1.25rem;display:flex;align-items:center;gap:12px}
+.uav{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.uname{font-size:16px;font-weight:800;color:#0F172A}
+.urole{font-size:11px;color:#64748B;margin-top:1px}
+.ubadges{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.ubadge{padding:2px 8px;border-radius:5px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0}
+.ubadge-g{background:#F0FDF4;color:#16A34A;border-color:#BBF7D0}
+.ubadge-y{background:#FFFBEB;color:#92400E;border-color:#FDE68A}
+
+.main{padding:1rem 1.25rem;max-width:1040px;margin:0 auto;width:100%}
+
+.sbar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.sc{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E2E8F0;border-radius:9px;padding:8px 14px}
+.sn{font-size:18px;font-weight:800;line-height:1}
+.sl{font-size:9px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dg{background:#16A34A}.dy{background:#D97706}.dr{background:#EF4444}.dn{background:#CBD5E1}
+.pgw{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E2E8F0;border-radius:9px;padding:8px 14px;min-width:160px}
+.pgl{font-size:9px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.pgt{flex:1;height:5px;background:#F1F5F9;border-radius:5px;overflow:hidden}
+.pgf{height:100%;border-radius:5px;background:linear-gradient(90deg,#16A34A,#059669);transition:width .4s}
+.pgn{font-size:12px;font-weight:800;color:#0F172A}
+
+.seccard{background:#fff;border-radius:14px;border:1px solid #E2E8F0;margin-bottom:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sec-hd{padding:14px 18px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.sec-title{font-size:11px;font-weight:800;color:#0F172A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.sec-resp{font-size:12px;color:#475569;font-weight:600}
+.sec-sub{font-size:10px;color:#94A3B8;margin-left:5px}
+.sec-desc{font-size:11px;color:#64748B;line-height:1.55;margin-top:5px}
+.sec-alert{display:flex;gap:7px;background:#FFF7ED;border:1px solid #FDE68A;border-radius:7px;padding:7px 10px;margin-top:7px;font-size:10px;color:#92400E;line-height:1.5}
+.sec-sems{display:flex;gap:4px;flex-shrink:0}
+.ssem{display:flex;align-items:center;gap:3px;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:#F8FAFC;border:1px solid #E2E8F0}
+.ssem .dot{width:6px;height:6px}
+
+.sec-bd{display:grid;grid-template-columns:260px 1fr;border-top:1px solid #F1F5F9}
+@media(max-width:700px){.sec-bd{grid-template-columns:1fr}}
+.sec-l{padding:14px 16px;border-right:1px solid #F1F5F9;background:#FAFBFC;display:flex;flex-direction:column;gap:12px}
+.sec-r{padding:14px 18px}
+.mlbl{font-size:9px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+
+.rlist{display:flex;flex-direction:column;gap:4px}
+.ritem{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:#475569;line-height:1.4}
+.rbul{width:4px;height:4px;border-radius:50%;background:#CBD5E1;flex-shrink:0;margin-top:5px}
+.iflist{display:flex;flex-direction:column;gap:4px}
+.ifitem{background:#fff;border:1px solid #E2E8F0;border-radius:7px;padding:6px 9px}
+.ifbadge{padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;color:#fff;display:inline-block;margin-bottom:2px}
+.ifdesc{font-size:10px;color:#94A3B8;line-height:1.35}
+.cadgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.caditem{background:#fff;border:1px solid #E2E8F0;border-radius:7px;padding:7px 9px}
+.cadlbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.cad-d{color:#EF4444}.cad-s{color:#D97706}.cad-m{color:#3B82F6}
+.cadtxt{font-size:10px;color:#64748B;line-height:1.4}
+.cadmt{color:#CBD5E1;font-style:italic}
+
+.krow{border-bottom:1px solid #F8FAFC;padding:10px 0}
+.krow:last-child{border-bottom:none}
+.krt{display:grid;grid-template-columns:26px 1fr 190px;gap:10px;align-items:start}
+.knum{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.kname{font-size:12px;font-weight:700;color:#0F172A;line-height:1.3;margin-bottom:2px}
+.kdesc{font-size:10px;color:#94A3B8;line-height:1.4;margin-bottom:5px}
+.kbgs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:4px}
+.kb{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.2px}
+.kbf{background:#F8FAFC;color:#64748B;border:1px solid #E2E8F0}
+.kb-max{background:#ECFDF5;color:#059669;border:1px solid #A7F3D0}
+.kb-min{background:#FFF1F2;color:#BE123C;border:1px solid #FECDD3}
+.kb-man{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
+.kb-d{background:#FFF1F2;color:#BE123C;border:1px solid #FCA5A5}
+.kb-s{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA}
+.kb-m{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+.kb-q{background:#F5F3FF;color:#6D28D9;border:1px solid #DDD6FE}
+.kmeta{font-size:10px;color:#94A3B8}
+.kmeta strong{color:#475569}
+
+.krc{display:flex;flex-direction:column;gap:4px}
+.kval{font-size:13px;font-weight:800;color:#0F172A;text-align:right}
+.kdate{font-size:9px;color:#94A3B8;text-align:right}
+.kno{font-size:10px;color:#CBD5E1;font-style:italic;text-align:right}
+.kpb{height:4px;background:#F1F5F9;border-radius:4px;overflow:hidden}
+.kp{height:100%;border-radius:4px;transition:width .4s}
+.kp-g{background:#16A34A}.kp-y{background:#D97706}.kp-r{background:#EF4444}.kp-n{background:#E2E8F0}
+.ksem{display:flex;align-items:center;gap:4px;justify-content:flex-end}
+.ksd{width:7px;height:7px;border-radius:50%}
+.kst{font-size:9px;font-weight:700}
+.st-g{color:#16A34A}.st-y{color:#D97706}.st-r{color:#EF4444}.st-n{color:#CBD5E1}
+.kdv{font-size:9px;font-weight:600;margin-left:3px}
+.pos{color:#16A34A}.neg{color:#EF4444}.neu{color:#D97706}
+.kreg{width:100%;padding:4px 8px;border-radius:6px;border:1px solid #E2E8F0;background:#F8FAFC;font-size:10px;font-weight:600;cursor:pointer;color:#475569}
+.kreg:hover{border-color:#CBD5E1}
+.klogt{font-size:9px;color:#6366F1;cursor:pointer;background:none;border:none;text-align:right;width:100%;font-weight:600;padding:2px 0}
+.klogt:hover{color:#4338CA}
+.kloglist{margin-top:4px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:7px;padding:6px;display:flex;flex-direction:column;gap:3px}
+.kloge{background:#fff;border-radius:5px;border:1px solid #F1F5F9;padding:5px 7px}
+.kloge-top{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.kloge-val{font-size:11px;font-weight:800;color:#0F172A}
+.kloge-dt{font-size:9px;color:#94A3B8;margin-left:auto}
+.kloge-nota{font-size:10px;color:#64748B;font-style:italic;line-height:1.35}
+.kloge-who{font-size:9px;color:#CBD5E1;margin-top:1px}
+
+.kform{margin-top:6px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.kform-lbl{font-size:9px;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:.4px}
+.frow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flbl{font-size:10px;font-weight:700;color:#78350F;white-space:nowrap}
+.finp{flex:1;padding:5px 8px;border-radius:6px;border:1.5px solid #FDE68A;background:#fff;font-size:12px;font-weight:600;color:#0F172A;outline:none;min-width:70px}
+.finp:focus{border-color:#F59E0B}
+.fta{width:100%;padding:5px 8px;border-radius:6px;border:1.5px solid #FDE68A;background:#fff;font-size:10px;color:#475569;outline:none;resize:none;min-height:36px;font-family:inherit}
+.fconv{font-size:9px;color:#C2410C;font-style:italic;padding:1px 0}
+.fbr{display:flex;gap:5px}
+.fsave{padding:5px 12px;border-radius:6px;border:none;background:#16A34A;color:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.fcanc{padding:5px 10px;border-radius:6px;border:1px solid #E2E8F0;background:#fff;font-size:11px;font-weight:600;cursor:pointer;color:#64748B}
+
+/* edit mode */
+.einp{width:100%;padding:4px 6px;border-radius:6px;border:1.5px solid #FBBF24;background:#FFFBEB;font-size:inherit;font-weight:inherit;color:#0F172A;font-family:inherit;outline:none}
+.einp:focus{border-color:#F59E0B}
+.eta{width:100%;padding:4px 6px;border-radius:6px;border:1.5px solid #FBBF24;background:#FFFBEB;font-size:inherit;color:#0F172A;font-family:inherit;outline:none;resize:vertical;min-height:40px;line-height:1.4}
+.eta:focus{border-color:#F59E0B}
+.enum{padding:3px 6px;border-radius:6px;border:1.5px solid #FBBF24;background:#FFFBEB;font-size:13px;font-weight:800;color:#0F172A;width:80px;text-align:right;outline:none}
+.esel{padding:3px 5px;border-radius:5px;border:1px solid #E2E8F0;background:#F8FAFC;font-size:9px;color:#475569;outline:none}
+.erow{display:flex;align-items:center;gap:5px}
+.addbtn{width:100%;padding:6px;border-radius:7px;border:1.5px dashed #CBD5E1;background:transparent;font-size:10px;font-weight:600;color:#94A3B8;cursor:pointer;text-align:center;margin-top:4px}
+.addbtn:hover{border-color:#94A3B8;color:#475569}
+.delbtn{padding:2px 6px;border-radius:4px;border:1px solid #FECDD3;background:transparent;font-size:9px;color:#EF4444;cursor:pointer;flex-shrink:0}
+.delbtn:hover{background:#FFF1F2}
+
+.dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px}
+.dir-sec{font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.8px;padding:.5rem 0 4px;grid-column:1/-1;border-top:1px solid #F1F5F9;margin-top:4px}
+.dir-sec:first-child{border-top:none;margin-top:0;padding-top:0}
+.dcard{background:#fff;border-radius:12px;border:1px solid #E2E8F0;padding:12px 14px;cursor:pointer;transition:all .18s}
+.dcard:hover{border-color:#CBD5E1;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.07)}
+.dtop{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.dav{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+.dname{font-size:12px;font-weight:800;color:#0F172A}
+.drole{font-size:10px;color:#94A3B8;margin-top:1px;line-height:1.3}
+.dsems{display:flex;gap:4px;margin-bottom:6px}
+.dsem{display:flex;align-items:center;gap:3px;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;background:#F8FAFC;border:1px solid #E2E8F0}
+.dfoot{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding-top:6px;border-top:1px solid #F8FAFC;color:#94A3B8}
+.btn-back{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid #E2E8F0;font-size:11px;font-weight:600;color:#475569;cursor:pointer;padding:6px 11px;border-radius:7px;margin-bottom:.875rem}
+.btn-back:hover{border-color:#CBD5E1}
+
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:400;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal{background:#fff;border-radius:18px;padding:1.5rem;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+.modal h2{font-size:16px;font-weight:800;color:#0F172A;margin-bottom:3px}
+.modal p{font-size:11px;color:#64748B;margin-bottom:1rem;line-height:1.5}
+.mstep{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:9px;padding:10px 12px;margin-bottom:6px;display:flex;gap:9px;align-items:flex-start}
+.mnum{width:20px;height:20px;border-radius:50%;background:#0F172A;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mtxt{font-size:11px;color:#475569;line-height:1.5}
+.mtxt strong{color:#0F172A;display:block;margin-bottom:1px}
+.murl{background:#0F172A;color:#4ADE80;border-radius:6px;padding:5px 10px;font-size:10px;font-family:monospace;margin:4px 0;word-break:break-all;display:block}
+.ptbl{width:100%;border-collapse:collapse;margin-bottom:.75rem;font-size:11px}
+.ptbl th{text-align:left;padding:4px 7px;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #E2E8F0}
+.ptbl td{padding:4px 7px;border-bottom:1px solid #F8FAFC;color:#0F172A}
+.ptbl tr:last-child td{border-bottom:none}
+.mcls{width:100%;padding:9px;border-radius:9px;border:none;background:#0F172A;color:#fff;font-size:12px;font-weight:700;cursor:pointer;margin-top:.5rem}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="lcard">
+    <div class="llogo">carre<em>llo</em></div>
+    <div class="lsub">KPIs Q2 2026</div>
+    <div class="pdots">
+      <div class="pdot" id="p0"></div>
+      <div class="pdot" id="p1"></div>
+      <div class="pdot" id="p2"></div>
+      <div class="pdot" id="p3"></div>
+    </div>
+    <div class="kpad">
+      <button class="kbtn" id="b1">1</button>
+      <button class="kbtn" id="b2">2</button>
+      <button class="kbtn" id="b3">3</button>
+      <button class="kbtn" id="b4">4</button>
+      <button class="kbtn" id="b5">5</button>
+      <button class="kbtn" id="b6">6</button>
+      <button class="kbtn" id="b7">7</button>
+      <button class="kbtn" id="b8">8</button>
+      <button class="kbtn" id="b9">9</button>
+      <div class="kbtn empty"></div>
+      <button class="kbtn" id="b0">0</button>
+      <button class="kbtn del" id="bdel">&#9003;</button>
+    </div>
+    <div class="lmsg" id="lmsg">Ingresa tu PIN de 4 digitos</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="tbrand">carre<em>llo</em></div>
+    <div class="tsep"></div>
+    <div class="tc-box">
+      <div class="tc-lbl">TC</div>
+      <input class="tc-inp" type="number" id="tcinp" value="1350" min="1">
+      <div class="tc-lbl">ARS/USD</div>
+    </div>
+    <div class="tbright" id="tbright"></div>
+  </div>
+  <div id="uhead"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+var PINS = {
+  '0000':'director',
+  '1001':'julian', '1002':'fabio',   '1003':'rocio',
+  '1004':'tobias', '1005':'juanpablo','1006':'esteban','1007':'facundo',
+  '1008':'enzo',
+  '1009':'milton', '1010':'matias',  '1011':'brian',
+  '1012':'natalia','1013':'lucas'
+};
+
+var USERS = {
+  director: {id:'director',name:'Direccion',ini:'DIR',role:'Acceso total - Vista global - Edicion',area:'dir',color:'#1E293B',isDir:true},
+  julian:   {id:'julian',  name:'Julian',   ini:'JP', role:'Supervisor Growth & Marketplace',           area:'ventas',color:'#3B82F6'},
+  fabio:    {id:'fabio',   name:'Fabio',    ini:'FB', role:'Supervisor Operaciones Comercial & FULL',   area:'ventas',color:'#6366F1'},
+  rocio:    {id:'rocio',   name:'Rocio',    ini:'RD', role:'Supervisora E-Commerce Web & Catalogos',    area:'ventas',color:'#EC4899'},
+  tobias:   {id:'tobias',  name:'Tobias',   ini:'TR', role:'Jefe de Supply Chain',                     area:'supply',color:'#8B5CF6'},
+  juanpablo:{id:'juanpablo',name:'Juan Pablo',ini:'JC',role:'Comprador Senior',                        area:'supply',color:'#7C3AED'},
+  esteban:  {id:'esteban', name:'Esteban',  ini:'EC', role:'Analista Senior de Compras',               area:'supply',color:'#A855F7'},
+  facundo:  {id:'facundo', name:'Facundo',  ini:'FL', role:'Analista & Admin de Compras',              area:'supply',color:'#6D28D9'},
+  enzo:     {id:'enzo',    name:'Enzo',     ini:'EB', role:'Coordinador CX & Postventa',               area:'cx',    color:'#059669'},
+  milton:   {id:'milton',  name:'Milton',   ini:'MA', role:'Jefe de Logistica & Fulfillment',          area:'logis', color:'#0EA5E9'},
+  matias:   {id:'matias',  name:'Matias',   ini:'MC', role:'Encargado de Deposito',                    area:'logis', color:'#0284C7'},
+  brian:    {id:'brian',   name:'Brian',    ini:'BR', role:'Operario de Deposito',                     area:'logis', color:'#0369A1'},
+  natalia:  {id:'natalia', name:'Natalia',  ini:'NM', role:'Supervisora Contabilidad & Admin',         area:'admin', color:'#D97706'},
+  lucas:    {id:'lucas',   name:'Lucas',    ini:'LA', role:'Analista y Auditor Contable',              area:'admin', color:'#B45309'}
+};
+
+var AL = {ventas:'Ventas & Growth',supply:'Supply Chain',cx:'CX & Postventa',logis:'Logistica',admin:'Finanzas & Admin',dir:'Direccion'};
+
+// KPI defaults per user [seccion, color, kpis[]]
+// kpi: {id, n, l(abel), d(esc), m(eta), t(ipo MAX/MIN/MAN), u(nidad), f(rec), fmt(usd/ars/pct/pct1/num/dec)}
+var DEFS = {
+julian: {
+  resp:['Performance publicaciones por SKU y categoria','Analisis de ventas, conversion y visibilidad','Seguimiento campanas, promos y ofertas','Deteccion de oportunidades y desvios','Coordinacion con Supply Chain sobre disponibilidad','Apoyo en decisiones de publicidad'],
+  ifaces:[{a:'Supply Chain',c:'#8B5CF6',d:'stock disponible, quiebres'},{a:'Logistica',c:'#0EA5E9',d:'tiempos de despacho'},{a:'CX',c:'#059669',d:'productos con reclamos'},{a:'Marketing',c:'#EC4899',d:'campanas y mensajes'},{a:'Direccion',c:'#1E293B',d:'crecimiento y margen'}],
+  cad:{d:'Performance + stock critico + pricing/promos + ads',s:'Analisis categorias + ACOS/margen + coord supply chain',m:'Evaluacion crecimiento + rentabilidad + aprendizajes'},
+  secs:[
+    {id:'s1',s:'MELI - Marketplace',c:'#3B82F6',alert:'',
+     kpis:[
+      {id:'j1',n:1,l:'Facturacion MELI',d:'Ventas brutas USD de todas las categorias MELI de Julian.',m:40000,t:'MAX',u:'USD/mes',f:'Mensual',fmt:'usd'},
+      {id:'j2',n:2,l:'ACOS MELI',d:'Gasto publicidad / ventas. Si supera 15% no hay bono. Meta <=12%.',m:12,t:'MIN',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'j3',n:3,l:'Publicaciones optimizadas',d:'Publicaciones revisadas/semana: titulo, imagenes, keywords, precio.',m:1,t:'MAX',u:'#/sem',f:'Semanal',fmt:'num'}
+     ]},
+    {id:'s2',s:'Web - Tienda Nube',c:'#10B981',alert:'',
+     kpis:[
+      {id:'j4',n:4,l:'Fichas TN optimizadas',d:'Fichas actualizadas en Tienda Nube/semana. ~1600 productos. Meta=20% catalogo/sem.',m:320,t:'MAX',u:'fichas/sem',f:'Semanal',fmt:'num'},
+      {id:'j5',n:5,l:'Mejoras web ejecutadas',d:'Nuevas mejoras implementadas en el canal web por mes.',m:3,t:'MAX',u:'#/mes',f:'Mensual',fmt:'num'},
+      {id:'j6',n:6,l:'SKUs con primera venta',d:'Productos que registran primera venta en MELI en el mes.',m:3,t:'MAX',u:'SKUs/mes',f:'Mensual',fmt:'num'}
+     ]}
+  ]
+},
+fabio: {
+  resp:['Performance publicaciones por SKU en sus categorias','Maximizacion del margen por canal/categoria','Gestion de precios y promociones','Analisis de rentabilidad y decisiones de pricing','Coordinacion con Direccion en decisiones de alto impacto','Apoyo en auditoria del deposito'],
+  ifaces:[{a:'Supply Chain',c:'#8B5CF6',d:'disponibilidad y reposicion stock FULL'},{a:'Logistica',c:'#0EA5E9',d:'auditoria deposito y calidad operativa'},{a:'Direccion',c:'#1E293B',d:'decisiones de pricing y margen'},{a:'CX',c:'#059669',d:'productos con alta devolucion'}],
+  cad:{d:'Precios + alertas stock FULL + campanas activas',s:'Auditoria deposito + stock antiguedad + ACOS/categoria',m:'Rentabilidad + decisiones pricing + stock >60 dias'},
+  secs:[
+    {id:'s1',s:'MELI - Facturacion y Rentabilidad',c:'#6366F1',alert:'',
+     kpis:[
+      {id:'f1',n:1,l:'Facturacion MELI',d:'Ventas brutas USD de las categorias MELI de Fabio. 64% del revenue empresa.',m:150000,t:'MAX',u:'USD/mes',f:'Mensual',fmt:'usd'},
+      {id:'f2',n:2,l:'ACOS MELI',d:'Gasto publicidad / ventas. Solo aplica al canal MELI.',m:12,t:'MIN',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'f3',n:3,l:'SKUs con stock FULL activo',d:'SKUs disponibles en MELI Full sobre total activos. <90% riesgo de cancelaciones.',m:90,t:'MAX',u:'% portafolio',f:'Semanal',fmt:'pct'},
+      {id:'f4',n:4,l:'Reduccion stock >60 dias',d:'Reduccion mensual del valor de inventario con mas de 60 dias sin rotacion.',m:4,t:'MIN',u:'% reduccion/mes',f:'Mensual',fmt:'pct'},
+      {id:'f5',n:5,l:'Auditoria deposito',d:'Incidencias detectadas en la auditoria operativa semanal del deposito.',m:1,t:'MIN',u:'incidencias/sem',f:'Semanal',fmt:'num'}
+     ]}
+  ]
+},
+rocio: {
+  resp:['Performance publicaciones por SKU en sus categorias','Gestion de precios y promociones','Barrido semanal del catalogo MELI asignado','Revision de productos piedra y sugerencia de ofertas','Propuesta de contenido y mejora de fichas a Marketing'],
+  ifaces:[{a:'Julian',c:'#3B82F6',d:'coordinacion publicidad y productos lanzamiento'},{a:'Marketing',c:'#EC4899',d:'imagenes, contenido y campanas'},{a:'Supply Chain',c:'#8B5CF6',d:'disponibilidad stock y alerta quiebres'},{a:'Logistica',c:'#0EA5E9',d:'capacidad despacho web'}],
+  cad:{d:'Inbox CB + alertas precio/stock + publicaciones activas',s:'Barrido catalogo + ofertas ODD/relampago + propuestas Marketing',m:'Performance categorias + ticket promedio + analisis conversion'},
+  secs:[
+    {id:'s1',s:'MELI - Categorias Rocio',c:'#EC4899',alert:'',
+     kpis:[
+      {id:'r1',n:1,l:'Facturacion MELI',d:'Ventas brutas USD de las categorias MELI de Rocio. 24% revenue empresa.',m:65000,t:'MAX',u:'USD/mes',f:'Mensual',fmt:'usd'},
+      {id:'r2',n:2,l:'ACOS MELI Rocio',d:'Gasto publicidad / ventas categorias Rocio. Solo aplica a MELI.',m:12,t:'MIN',u:'%',f:'Mensual',fmt:'pct'}
+     ]},
+    {id:'s2',s:'Web - Tienda Nube (owner)',c:'#059669',alert:'Canal en escalado activo desde Diciembre 2025. Aprox 7% facturacion MELI como baseline.',
+     kpis:[
+      {id:'r3',n:3,l:'Facturacion Tienda Nube',d:'Ventas netas canal web en USD. Meta dinamica desde Config Web.',m:7381,t:'MAX',u:'USD/mes',f:'Mensual',fmt:'usd'},
+      {id:'r4',n:4,l:'Conversion sesion a venta',d:'Pedidos / sesiones unicas TN. Q1 real: 0.46% a 0.71% a 0.48%.',m:0.55,t:'MAX',u:'%',f:'Mensual',fmt:'pct1'},
+      {id:'r5',n:5,l:'Ticket promedio web',d:'Facturacion TN / pedidos. Tendencia Q1 bajista. Objetivo: revertir.',m:65000,t:'MAN',u:'ARS/pedido',f:'Mensual',fmt:'ars'},
+      {id:'r6',n:6,l:'Barrido catalogo MELI',d:'% de productos revisados/semana: precio, oferta, stock, ficha.',m:100,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'r7',n:7,l:'Score ejecucion web',d:'Checklist de 4 items semanales. Cada item vale 25%.',m:100,t:'MAX',u:'%',f:'Semanal',fmt:'pct'}
+     ]}
+  ]
+},
+tobias: {
+  resp:['Planificacion de compras y forecast de demanda','Gestion y negociacion con proveedores chinos y locales','Control de quiebres y cobertura de stock','Optimizacion de precios de origen','Coordinacion inter-areas: Deposito, Ventas y Finanzas'],
+  ifaces:[{a:'Ventas',c:'#3B82F6',d:'que vender, que priorizar, que esta quebrando'},{a:'Logistica',c:'#0EA5E9',d:'recepciones, stock fisico y control'},{a:'Finanzas',c:'#D97706',d:'credito disponible, pagos y IVA'},{a:'Direccion',c:'#1E293B',d:'estrategia de compra e inversion'}],
+  cad:{d:'Alerta quiebres + stock critico + OC en transito',s:'Cobertura + descuentos + reporte reposicion + L10',m:'Forecast vs real + precios origen + revision credito China'},
+  secs:[
+    {id:'s1',s:'Supply Chain - Abastecimiento y Compras',c:'#8B5CF6',alert:'',
+     kpis:[
+      {id:'t1',n:1,l:'Quiebres de stock',d:'Quiebres en FULL o deposito imputables a error de forecast o compra tardia.',m:2,t:'MIN',u:'quiebres/mes',f:'Mensual',fmt:'num'},
+      {id:'t2',n:2,l:'Credito disponible China',d:'Monto de credito USD con proveedores chinos para nuevas ordenes.',m:20000,t:'MAX',u:'USD',f:'Mensual',fmt:'usd'},
+      {id:'t3',n:3,l:'Proveedores con descuento',d:'Cantidad de proveedores con descuento comercial negociado y activo.',m:6,t:'MAX',u:'#',f:'Semanal',fmt:'num'},
+      {id:'t4',n:4,l:'SKUs sin precio revisado',d:'SKUs del portafolio activo sin precio de origen validado. Meta 0.',m:0,t:'MIN',u:'SKUs',f:'Mensual',fmt:'num'},
+      {id:'t5',n:5,l:'Incidencias doble IVA',d:'Incidencias de doble cobro o pago de IVA en compras. Meta 0 absoluto.',m:0,t:'MIN',u:'#/mes',f:'Mensual',fmt:'num'}
+     ]}
+  ]
+},
+juanpablo: {
+  resp:['Emision de OC en tiempo y forma','Seguimiento cumplimiento condiciones con proveedores','Negociacion de descuentos comerciales','Control de recepciones y deteccion de desvios','Revision y optimizacion de precios de origen'],
+  ifaces:[{a:'Tobias',c:'#8B5CF6',d:'estrategia de compra y proveedores'},{a:'Logistica',c:'#0EA5E9',d:'recepciones, control fisico y stock'},{a:'Facundo',c:'#6D28D9',d:'soporte documental y base maestra'}],
+  cad:{d:'',s:'OC pendientes + proveedores + descuentos + recepciones',m:'Cumplimiento condiciones + precios origen + cierre OC'},
+  secs:[
+    {id:'s1',s:'Compras - Ejecucion OC y Recepciones',c:'#7C3AED',alert:'',
+     kpis:[
+      {id:'jp1',n:1,l:'OC emitidas en tiempo',d:'% de OC emitidas dentro del plazo desde la solicitud.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'jp2',n:2,l:'Cumplimiento condiciones',d:'% de compras bajo las condiciones negociadas.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'jp3',n:3,l:'Descuentos negociados',d:'Descuentos negociados con proveedores en el periodo.',m:6,t:'MAX',u:'#',f:'Mensual',fmt:'num'},
+      {id:'jp4',n:4,l:'SKUs sin precio revisado',d:'SKUs sin precio de origen revisado. Complementa KPI de Tobias.',m:0,t:'MIN',u:'#',f:'Mensual',fmt:'num'},
+      {id:'jp5',n:5,l:'Recepciones con desvios',d:'% de recepciones donde la mercaderia no coincidio con lo pactado.',m:2,t:'MIN',u:'%',f:'Mensual',fmt:'pct'}
+     ]}
+  ]
+},
+esteban: {
+  resp:['Elaboracion del forecast de demanda por SKU','Control de cobertura y deteccion de sobrestock','Reportes de reposicion semanales','Analisis de rotacion y antiguedad de inventario','Control de IVA junto con Natalia'],
+  ifaces:[{a:'Tobias',c:'#8B5CF6',d:'forecast para decisiones de compra'},{a:'Juan Pablo',c:'#7C3AED',d:'soporte analitico para OC'},{a:'Ventas',c:'#3B82F6',d:'demanda proyectada y alertas'},{a:'Finanzas',c:'#D97706',d:'control de IVA'}],
+  cad:{d:'',s:'Reporte reposicion + forecast + alerta sobrestock/quiebre',m:'Precision forecast vs real + analisis cobertura + reporte Direccion'},
+  secs:[
+    {id:'s1',s:'Planificacion - Forecast y Analisis Inventario',c:'#A855F7',alert:'',
+     kpis:[
+      {id:'e1',n:1,l:'Quiebres por forecast',d:'Quiebres cuya causa raiz es un error en las proyecciones de Esteban.',m:2,t:'MIN',u:'#/mes',f:'Mensual',fmt:'num'},
+      {id:'e2',n:2,l:'Precision del forecast',d:'% de acierto del forecast vs demanda real.',m:85,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'e3',n:3,l:'SKUs con sobrecobertura >45d',d:'% del portafolio con mas de 45 dias de cobertura en stock.',m:10,t:'MIN',u:'%',f:'Quincenal',fmt:'pct'},
+      {id:'e4',n:4,l:'Reportes on-time',d:'% de reportes de reposicion entregados en fecha y formato pactado.',m:100,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'e5',n:5,l:'Incidencias IVA no detectadas',d:'Incidencias de IVA que llegaron al pago sin ser detectadas.',m:0,t:'MIN',u:'#',f:'Mensual',fmt:'num'}
+     ]}
+  ]
+},
+facundo: {
+  resp:['Seguimiento y conciliacion documental de recepciones','Actualizacion de la base maestra de Compras','Carga y control de facturas de proveedores','Gestion documental de OC','Coordinacion con Tobias y Natalia'],
+  ifaces:[{a:'Tobias',c:'#8B5CF6',d:'prioridades y soporte al jefe de area'},{a:'Natalia',c:'#D97706',d:'circuito de pagos y documentacion'},{a:'Juan Pablo',c:'#7C3AED',d:'soporte en recepciones y OC'}],
+  cad:{d:'',s:'Carga facturas + recepciones + base maestra',m:'Cierre documental + auditoria legajos + coordinacion Natalia'},
+  secs:[
+    {id:'s1',s:'Admin Compras - Soporte Documental',c:'#6D28D9',alert:'',
+     kpis:[
+      {id:'fa1',n:1,l:'Seguimiento recepciones',d:'% de recepciones con conciliacion documental completa.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'fa2',n:2,l:'Base maestra actualizada',d:'% de completitud de la base maestra del area.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'fa3',n:3,l:'Facturas sin errores',d:'% de facturas de proveedores cargadas correctamente.',m:98,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'fa4',n:4,l:'OC con legajo completo',d:'% de OC con documentacion completa: OC + remito + factura + conformidad.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'fa5',n:5,l:'Coordinacion admin on-time',d:'% de tareas de coordinacion con Admin entregadas en plazo.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'}
+     ]}
+  ]
+},
+enzo: {
+  resp:['Atencion y primera respuesta en MELI y Tienda Nube','Gestion del stock de devoluciones, open box y fallas','Resolucion de reclamos y mediaciones MELI','Seguimiento del aging de mercaderia en postventa','Implementar encuesta de satisfaccion post-resolucion (Rock Q2)'],
+  ifaces:[{a:'Milton',c:'#0EA5E9',d:'stock fisico de postventa y logistica'},{a:'Compras',c:'#8B5CF6',d:'reclamos por falla de producto'},{a:'Ventas',c:'#3B82F6',d:'publicaciones con alta devolucion'},{a:'Finanzas',c:'#D97706',d:'contracargos y devolucion de dinero'}],
+  cad:{d:'Inbox MELI + respuesta TN + alertas mediacion abierta',s:'Stock postventa + analisis casos repetitivos + recupero valor',m:'NPS + tasa reclamos + causas raiz + propuestas mejora'},
+  secs:[
+    {id:'s1',s:'CX y Postventa - Atencion y Resolucion',c:'#059669',alert:'Rock Q2 activo: implementar encuesta satisfaccion post-resolucion antes del 30/04.',
+     kpis:[
+      {id:'en1',n:1,l:'Stock postventa registrado',d:'% del stock de postventa registrado y categorizado en el sistema.',m:100,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'en2',n:2,l:'Recupero stock inmovilizado',d:'% de unidades con resolucion (venta, reparacion, baja) en el periodo.',m:90,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'en3',n:3,l:'Respuesta MELI',d:'Promedio de minutos entre consulta del cliente y primera respuesta.',m:15,t:'MIN',u:'min',f:'Diario',fmt:'num'},
+      {id:'en4',n:4,l:'Respuesta Tienda Nube',d:'Promedio de minutos de primera respuesta en el canal web.',m:30,t:'MIN',u:'min',f:'Diario',fmt:'num'},
+      {id:'en5',n:5,l:'Dias promedio resolucion',d:'Dias promedio desde apertura de caso hasta cierre definitivo.',m:30,t:'MIN',u:'dias',f:'Mensual',fmt:'num'},
+      {id:'en6',n:6,l:'Satisfaccion post-atencion',d:'Calificacion promedio en encuesta post-resolucion. Benchmark top: >=4.5.',m:4.0,t:'MAX',u:'/5',f:'Mensual',fmt:'dec'}
+     ]}
+  ]
+},
+milton: {
+  resp:['Control de exactitud global del inventario','Coordinacion del despacho en SLA (MELI Full 24hs)','Supervision del proceso de recepcion','Medicion del tiempo de preparacion de pedidos','Liderazgo equipo deposito: Matias y Brian'],
+  ifaces:[{a:'Ventas',c:'#3B82F6',d:'SLA, cancelaciones y stock disponible'},{a:'Supply Chain',c:'#8B5CF6',d:'recepciones y protocolo de ingreso'},{a:'CX',c:'#059669',d:'logistica de devoluciones y postventa'},{a:'Finanzas',c:'#D97706',d:'costo logistico y control de desvios'}],
+  cad:{d:'SLA despacho + picking + alertas inventario',s:'Auditoria recepcion + conteos ciclicos + reporte exactitud',m:'Costo logistico + exactitud inventario + analisis reclamos'},
+  secs:[
+    {id:'s1',s:'Logistica - Operacion del Deposito',c:'#0EA5E9',alert:'',
+     kpis:[
+      {id:'mi1',n:1,l:'Exactitud inventario global',d:'% coincidencia entre stock fisico y stock en sistema (MELI+ERP).',m:99.5,t:'MAX',u:'%',f:'Mensual',fmt:'pct1'},
+      {id:'mi2',n:2,l:'Reclamos por logistica',d:'% de reclamos atribuibles a errores logisticos sobre pedidos entregados.',m:1,t:'MIN',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'mi3',n:3,l:'Recepciones en 24hs',d:'% de mercaderia recibida controlada e ingresada al sistema en 24hs.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'mi4',n:4,l:'Tiempo de preparacion',d:'Minutos promedio desde asignacion del pedido hasta listo para despacho.',m:8,t:'MIN',u:'min/pedido',f:'Diario',fmt:'num'},
+      {id:'mi5',n:5,l:'Costo logistico por pedido',d:'Costo total logistico / pedidos despachados. Baseline Q2.',m:null,t:'MIN',u:'ARS/pedido',f:'Mensual',fmt:'ars'}
+     ]}
+  ]
+},
+matias: {
+  resp:['Control de exactitud del inventario en deposito','Recepcion, control e ingreso de mercaderia al sistema','Mantenimiento del orden y trazabilidad','Ejecucion de conteos ciclicos programados','Reporte de diferencias de recepcion al proveedor en <24hs'],
+  ifaces:[{a:'Milton',c:'#0EA5E9',d:'reporta y coordina la operacion diaria'},{a:'Fabio',c:'#6366F1',d:'auditoria operativa y stock FULL'},{a:'Supply Chain',c:'#8B5CF6',d:'recepciones documentales vs fisicas'}],
+  cad:{d:'Control picking + acomodo + ubicaciones criticas',s:'Conteo ciclico + auditoria orden + recepciones con desvios',m:'Cierre inventario mensual + reporte exactitud a Milton'},
+  secs:[
+    {id:'s1',s:'Deposito - Inventario y Trazabilidad',c:'#0284C7',alert:'Rock Q2 activo: formalizacion del rol mixto deposito + administracion (conversado con Marcelo).',
+     kpis:[
+      {id:'ma1',n:1,l:'Exactitud inventario deposito',d:'% coincidencia entre stock fisico en deposito y lo registrado en sistema.',m:99.5,t:'MAX',u:'%',f:'Mensual',fmt:'pct1'},
+      {id:'ma2',n:2,l:'Desvios en recepcion',d:'% de recepciones con diferencia entre lo pactado y lo recibido.',m:1,t:'MIN',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'ma3',n:3,l:'Orden y trazabilidad',d:'% de aprobacion en auditoria de orden, limpieza y trazabilidad.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'ma4',n:4,l:'Conteos ciclicos',d:'% de conteos ciclicos programados ejecutados en fecha.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'ma5',n:5,l:'Diferencias reportadas <24hs',d:'% de diferencias de recepcion reportadas al proveedor en menos de 24hs.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'}
+     ]}
+  ]
+},
+brian: {
+  resp:['Preparacion de pedidos: picking, packing y etiquetado','Reposicion interna de mercaderia','Cumplimiento del circuito operativo estandar','Propuesta de mejoras al proceso','Colaboracion en conteos ciclicos con Matias'],
+  ifaces:[{a:'Matias',c:'#0284C7',d:'supervisor inmediato, asigna tareas y audita'},{a:'Milton',c:'#0EA5E9',d:'estandares operativos y metricas'},{a:'CX',c:'#059669',d:'pedidos con instrucciones especiales'}],
+  cad:{d:'Picking + packing + acomodo + reposicion + plan del dia',s:'Conteo ciclico + propuestas mejora a Matias',m:'Productividad mensual + procesos + feedback 1:1 con Milton'},
+  secs:[
+    {id:'s1',s:'Deposito - Picking y Productividad',c:'#0369A1',alert:'',
+     kpis:[
+      {id:'br1',n:1,l:'Exactitud en picking',d:'% de pedidos preparados sin errores: producto, cantidad y embalaje.',m:99.5,t:'MAX',u:'%',f:'Mensual',fmt:'pct1'},
+      {id:'br2',n:2,l:'Productividad diaria',d:'% cumplimiento del plan de trabajo diario.',m:95,t:'MAX',u:'%',f:'Diario',fmt:'pct'},
+      {id:'br3',n:3,l:'Cumplimiento politicas',d:'% adherencia a politicas del deposito.',m:95,t:'MAX',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'br4',n:4,l:'Errores de reposicion',d:'% de errores en reposicion interna de mercaderia.',m:5,t:'MIN',u:'%',f:'Semanal',fmt:'pct'},
+      {id:'br5',n:5,l:'Cumplimiento circuito operativo',d:'% adherencia al circuito estandar de preparacion y despacho.',m:100,t:'MAX',u:'%',f:'Diario',fmt:'pct'}
+     ]}
+  ]
+},
+natalia: {
+  resp:['Gestion y ejecucion de pagos a proveedores en tiempo','Cierre contable mensual en fecha comprometida','Control de errores criticos de pago (cero tolerancia)','Conciliacion de cuentas corrientes de proveedores','Cumplimiento documental del circuito de pagos'],
+  ifaces:[{a:'Tobias/Compras',c:'#8B5CF6',d:'pagos proveedores y validacion IVA'},{a:'Lucas',c:'#B45309',d:'auditoria y control contable'},{a:'Direccion',c:'#1E293B',d:'P&L, cierre mensual y finanzas'},{a:'Luis',c:'#1E293B',d:'politica salarial y estrategia financiera'}],
+  cad:{d:'',s:'Pagos pendientes + vencimientos + coordinacion Compras',m:'Cierre contable + conciliacion + auditoria documental + reporte'},
+  secs:[
+    {id:'s1',s:'Finanzas - Pagos, Contabilidad y Cierre',c:'#D97706',alert:'Rock Q2 activo: diseno politica salarial con bandas por rol. Deadline: 30/04.',
+     kpis:[
+      {id:'na1',n:1,l:'Pagos en tiempo',d:'% de pagos a proveedores ejecutados dentro del plazo pactado.',m:98,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'na2',n:2,l:'Cierre contable en fecha',d:'Dias de demora en el cierre contable mensual.',m:1,t:'MIN',u:'dias demora',f:'Mensual',fmt:'num'},
+      {id:'na3',n:3,l:'Errores criticos de pago',d:'Pagos duplicados, montos incorrectos o no autorizados. Meta 0 absoluto.',m:0,t:'MIN',u:'#/mes',f:'Mensual',fmt:'num'},
+      {id:'na4',n:4,l:'Conciliacion proveedores',d:'% de cuentas corrientes de proveedores conciliadas al cierre del mes.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'na5',n:5,l:'Cumplimiento documental',d:'% de pagos con documentacion completa: OC + remito + factura + aprobacion.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'}
+     ]}
+  ]
+},
+lucas: {
+  resp:['Conciliaciones bancarias y de medios de cobro','Verificacion de exactitud en imputaciones contables','Auditoria del circuito de pagos y compras','Generacion de reportes de control y alertas','Control de IVA y percepciones antes del pago'],
+  ifaces:[{a:'Natalia',c:'#D97706',d:'segunda capa de control sobre pagos'},{a:'Compras',c:'#8B5CF6',d:'auditoria facturas y circuito documental'},{a:'Direccion',c:'#1E293B',d:'reportes de control y cierre contable'}],
+  cad:{d:'',s:'Conciliaciones + imputaciones + alertas a Natalia',m:'Auditoria circuito pagos + reporte Direccion + cierre control'},
+  secs:[
+    {id:'s1',s:'Auditoria y Control Contable',c:'#B45309',alert:'',
+     kpis:[
+      {id:'lu1',n:1,l:'Conciliaciones en tiempo',d:'% de conciliaciones bancarias completadas en fecha y sin desvios.',m:99.5,t:'MAX',u:'%',f:'Mensual',fmt:'pct1'},
+      {id:'lu2',n:2,l:'Errores de imputacion',d:'% de registros contables con error de imputacion.',m:1,t:'MIN',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'lu3',n:3,l:'Auditoria de pagos',d:'% del circuito de pagos y compras auditado en el periodo.',m:95,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'lu4',n:4,l:'Reportes entregados',d:'% de reportes entregados en la fecha comprometida.',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'},
+      {id:'lu5',n:5,l:'Incidencias IVA no detectadas',d:'Incidencias de IVA que llegaron al pago sin ser detectadas. Meta 0.',m:0,t:'MIN',u:'#',f:'Mensual',fmt:'num'}
+     ]}
+  ]
+}
+};
+
+// ============================================================
+// STATE
+// ============================================================
+var pin = '';
+var curUser = null;
+var dirView = null;
+var editMode = false;
+var appData = {};
+var tc = 1350;
+
+//  FIREBASE CONFIG 
+// Pegar aqui la URL de tu Realtime Database de Firebase
+// Ejemplo: https://mi-proyecto-default-rtdb.firebaseio.com
+var FB_URL = 'https://carrello-acceso-default-rtdb.firebaseio.com';
+var FB_ON = FB_URL.indexOf('firebaseio.com') > -1;
+function fbRead(path){ if(!FB_ON) return Promise.resolve(null); return fetch(FB_URL+path+'.json').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}); }
+function fbWrite(path,data){ if(!FB_ON) return; fetch(FB_URL+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){}); }
+function fbPatch(path,data){ if(!FB_ON) return; fetch(FB_URL+path+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(function(){}); }
+// In-memory store (loaded from Firebase on login, kept in sync)
+var MEM = {};
+function lsk(k){ return 'cg7_' + k; }
+function gls(k){ return MEM[k] !== undefined ? MEM[k] : (function(){ try{var d=localStorage.getItem(lsk(k));return d?JSON.parse(d):{};}catch(e){return{};} })(); }
+function sls(k,v){ MEM[k]=v; try{localStorage.setItem(lsk(k),JSON.stringify(v));}catch(e){} fbWrite('/'+k, v); }
+function gla(k){ return MEM[k] !== undefined ? MEM[k] : (function(){ try{var d=localStorage.getItem(lsk(k));return d?JSON.parse(d):[];}catch(e){return[];} })(); }
+function sla(k,v){ MEM[k]=v; try{localStorage.setItem(lsk(k),JSON.stringify(v));}catch(e){} fbWrite('/'+k, v); }
+function cloneDeep(o){ return JSON.parse(JSON.stringify(o)); }
+
+// Log helpers — localStorage is primary, Firebase is async backup
+function getLog(uid){
+  try {
+    var raw = localStorage.getItem('cg7_log_'+uid);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e){ return {}; }
+}
+function saveLog(uid, log){
+  try { localStorage.setItem('cg7_log_'+uid, JSON.stringify(log)); } catch(e){}
+  // also sync to Firebase (fire-and-forget, no overwrite on reload)
+  fbWrite('/log_'+uid, log);
+}
+
+function applyEditData(){
+  // Load editData directly from localStorage (no Firebase, no MEM cache)
+  try {
+    var raw = localStorage.getItem(lsk('editData'));
+    if(!raw) return;
+    var saved = JSON.parse(raw);
+    if(!saved || typeof saved !== 'object') return;
+    Object.keys(saved).forEach(function(uid){
+      if(!appData[uid] || !saved[uid]) return;
+      if(saved[uid].secs   !== undefined) appData[uid].secs   = saved[uid].secs;
+      if(saved[uid].resp   !== undefined) appData[uid].resp   = saved[uid].resp;
+      if(saved[uid].ifaces !== undefined) appData[uid].ifaces = saved[uid].ifaces;
+      if(saved[uid].cad    !== undefined) appData[uid].cad    = saved[uid].cad;
+    });
+  } catch(e) {}
+}
+
+function initData(callback){
+  appData = cloneDeep(DEFS);
+  applyEditData();  // always apply saved edits first, directly from localStorage
+  var savedTc = localStorage.getItem(lsk('tc'));
+  if(savedTc) tc = parseFloat(savedTc) || 1350;
+  var el = document.getElementById('tcinp');
+  if(el) el.value = tc;
+  if(!FB_ON){ if(callback) callback(); return; }
+  showLoading(true);
+  var uids = Object.keys(USERS).filter(function(u){ return !USERS[u].isDir; });
+  var ps = [];
+  // NOTE: editData is NOT read from Firebase — localStorage is the source of truth
+  //       Firebase is only used for log entries (user-entered KPI data)
+  uids.forEach(function(uid){
+    ps.push(fbRead('/log_'+uid).then(function(d){
+      // Only apply Firebase data if localStorage has nothing for this user
+      if(d){
+        var local = localStorage.getItem('cg7_log_'+uid);
+        if(!local){ try{localStorage.setItem('cg7_log_'+uid,JSON.stringify(d));}catch(e){} }
+      }
+    }));
+  });
+  ps.push(fbRead('/tc').then(function(d){
+    if(d){ tc=parseFloat(d)||1350; var ti=document.getElementById('tcinp'); if(ti) ti.value=tc; }
+  }));
+  Promise.all(ps).then(function(){ showLoading(false); if(callback) callback(); }).catch(function(){ showLoading(false); if(callback) callback(); });
+}
+
+function showLoading(on){
+  var el=document.getElementById('ldbar');
+  if(!el){
+    el=document.createElement('div'); el.id='ldbar';
+    el.style.cssText='position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#16A34A,#38B2AC);z-index:9999;transition:opacity .3s';
+    document.body.appendChild(el);
+  }
+  el.style.opacity=on?'1':'0';
+}
+
+// ============================================================
+// KEYPAD - wired with addEventListener, no onclick
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  for(var n=0; n<=9; n++){
+    (function(num){
+      var el = document.getElementById('b' + num);
+      if(el) el.addEventListener('click', function(){ pk(num); });
+    })(n);
+  }
+  document.getElementById('bdel').addEventListener('click', pkd);
+  document.getElementById('tcinp').addEventListener('input', function(){
+    tc = parseFloat(this.value) || 1350;
+    localStorage.setItem(lsk('tc'), String(tc));
+    fbWrite('/tc', tc);
+  });
+});
+
+function pk(n){
+  if(pin.length >= 4) return;
+  pin += String(n);
+  upDots();
+  if(pin.length === 4){
+    var uid = PINS[pin];
+    if(uid){
+      curUser = USERS[uid];
+      editMode = false;
+      dirView = null;
+      pin = '';
+      initData(function(){
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('app').className = 'on';
+        renderApp();
+      });
+    } else {
+      var dots = document.querySelectorAll('.pdot');
+      for(var i=0;i<dots.length;i++) dots[i].classList.add('err');
+      var m = document.getElementById('lmsg');
+      m.textContent = 'PIN incorrecto - intenta de nuevo';
+      m.className = 'lmsg err';
+      setTimeout(function(){
+        pin = ''; upDots();
+        m.textContent = 'Ingresa tu PIN de 4 digitos';
+        m.className = 'lmsg';
+      }, 900);
+    }
+  }
+}
+function pkd(){
+  if(pin.length > 0){ pin = pin.slice(0,-1); upDots(); }
+}
+function upDots(){
+  for(var i=0;i<4;i++){
+    var d = document.getElementById('p'+i);
+    if(i < pin.length) d.classList.add('on'); else d.classList.remove('on');
+    d.classList.remove('err');
+  }
+}
+function logout(){
+  pin=''; curUser=null; dirView=null; editMode=false;
+  document.getElementById('app').className='';
+  document.getElementById('login').style.display='';
+  upDots();
+  document.getElementById('lmsg').textContent='Ingresa tu PIN de 4 digitos';
+  document.getElementById('lmsg').className='lmsg';
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getSem(m,a,t){
+  if(m===null||a===''||a===null||a===undefined) return 'none';
+  var av=parseFloat(a), mv=parseFloat(m);
+  if(isNaN(av)||isNaN(mv)) return 'none';
+  if(t==='MAX') return av>=mv?'green':av>=mv*.9?'yellow':'red';
+  if(t==='MIN') return av<=mv?'green':av<=mv*1.1?'yellow':'red';
+  var d=Math.abs(av-mv)/mv; return d<=.1?'green':d<=.2?'yellow':'red';
+}
+function getProg(m,a,t){
+  if(m===null||a===''||a===null) return 0;
+  var av=parseFloat(a), mv=parseFloat(m);
+  if(isNaN(av)||isNaN(mv)||mv===0) return 0;
+  if(t==='MAX') return Math.min(100,Math.round(av/mv*100));
+  if(t==='MIN') return Math.min(100,Math.round((1-Math.max(0,av-mv)/mv)*100));
+  return Math.min(100,Math.round((1-Math.abs(av-mv)/mv)*100));
+}
+function fmtM(v,fmt){
+  if(v===null) return 'Baseline Q2';
+  if(fmt==='usd') return 'USD '+Number(v).toLocaleString('es-AR');
+  if(fmt==='ars') return '$'+Number(v).toLocaleString('es-AR');
+  if(fmt==='pct'||fmt==='pct1') return v+'%';
+  if(fmt==='dec') return parseFloat(v).toFixed(1);
+  return String(v);
+}
+function fmtA(v,fmt){
+  if(v===''||v===null||v===undefined) return '';
+  if(fmt==='usd') return 'USD '+Number(v).toLocaleString('es-AR');
+  if(fmt==='ars') return '$'+Number(v).toLocaleString('es-AR');
+  if(fmt==='pct'||fmt==='pct1') return parseFloat(v).toFixed(1)+'%';
+  if(fmt==='dec') return parseFloat(v).toFixed(1);
+  return String(v);
+}
+function getDv(m,a){
+  if(m===null||a===''||a===null) return '';
+  var av=parseFloat(a), mv=parseFloat(m);
+  if(isNaN(av)||isNaN(mv)||mv===0) return '';
+  var p=(av-mv)/mv*100;
+  return (p>=0?'+':'')+Math.abs(p).toFixed(1)+'%';
+}
+function getDvC(m,a,t){
+  if(m===null||a===''||a===null) return '';
+  var av=parseFloat(a), mv=parseFloat(m);
+  if(isNaN(av)||isNaN(mv)||mv===0) return '';
+  var d=av-mv;
+  if(t==='MAX') return d>=0?'pos':'neg';
+  if(t==='MIN') return d<=0?'pos':'neg';
+  return Math.abs(d/mv)<=.1?'pos':'neu';
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtDt(iso){
+  try{
+    var d=new Date(iso);
+    return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'})
+      +' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){ return iso; }
+}
+function esc(s){
+  if(!s && s!==0) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// RENDER APP
+// ============================================================
+function renderApp(){
+  var tb = document.getElementById('tbright');
+  var btns = '';
+  if(curUser.isDir){
+    btns += '<button class="btn btn-edit'+(editMode?' on':'')+'" id="editbtn">'+(editMode?'Edicion ON':'Editar')+'</button>';
+    if(editMode) btns += '<button class="btn btn-save" id="savebtn">Guardar todo</button>';
+    btns += '<button class="btn btn-report" id="repbtn">Reporte</button>';
+  }
+  btns += '<button class="btn btn-share" id="sharebtn">Compartir</button>';
+  btns += '<button class="btn btn-danger" id="logoutbtn">Salir</button>';
+  tb.innerHTML = btns;
+
+  document.getElementById('editbtn') && document.getElementById('editbtn').addEventListener('click', function(){ editMode=!editMode; renderApp(); });
+  document.getElementById('savebtn') && document.getElementById('savebtn').addEventListener('click', saveEdits);
+  document.getElementById('repbtn') && document.getElementById('repbtn').addEventListener('click', genReport);
+  document.getElementById('sharebtn').addEventListener('click', showShare);
+  document.getElementById('logoutbtn').addEventListener('click', logout);
+
+  var u = curUser;
+  var al = AL[u.area]||'';
+  var ebadge = editMode ? '<span class="ubadge ubadge-y">Edicion activa</span>' : '';
+  var vbadge = dirView&&curUser.isDir ? '<span class="ubadge" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE">Vista: '+USERS[dirView].name+'</span>' : '';
+  document.getElementById('uhead').innerHTML =
+    '<div class="uhead">'+
+    '<div class="uav" style="background:'+u.color+'">'+u.ini+'</div>'+
+    '<div><div class="uname">'+u.name+'</div><div class="urole">'+u.role+'</div>'+
+    '<div class="ubadges">'+(al?'<span class="ubadge">'+al+'</span>':'')+
+    '<span class="ubadge ubadge-g">Q2 2026</span>'+ebadge+vbadge+'</div></div></div>';
+
+  if(curUser.isDir && !dirView){ renderDir(); startAutoRefresh(); }
+  else { stopAutoRefresh(); renderUserDash(dirView || curUser.id); }
+}
+
+var refreshTimer = null;
+function startAutoRefresh(){
+  stopAutoRefresh();
+  if(!FB_ON) return;
+  refreshTimer = setInterval(function(){
+    if(!curUser||!curUser.isDir||dirView) return;
+    var uids=Object.keys(USERS).filter(function(u){return !USERS[u].isDir;});
+    var ps=uids.map(function(uid){
+      return fbRead('/log_'+uid).then(function(d){
+        if(d){ MEM['log_'+uid]=d; try{localStorage.setItem(lsk('log_'+uid),JSON.stringify(d));}catch(e){} }
+      });
+    });
+    Promise.all(ps).then(function(){ renderDir(); });
+  }, 30000);
+}
+function stopAutoRefresh(){
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer=null; }
+}
+
+function saveEdits(){
+  var ed = {};
+  Object.keys(appData).forEach(function(uid){
+    if(!USERS[uid] || USERS[uid].isDir) return;
+    ed[uid] = {
+      secs:   appData[uid].secs,
+      resp:   appData[uid].resp,
+      ifaces: appData[uid].ifaces,
+      cad:    appData[uid].cad
+    };
+  });
+  // Save directly to localStorage (bypassing MEM to avoid stale cache issues)
+  try { localStorage.setItem(lsk('editData'), JSON.stringify(ed)); } catch(e) {}
+  // Also try Firebase but don't depend on it
+  fbWrite('/editData', ed);
+  var btn = document.getElementById('savebtn');
+  if(btn){ btn.textContent='Guardado!'; setTimeout(function(){ btn.textContent='Guardar todo'; },2000); }
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function calcStats(uid){
+  var secs = appData[uid] ? appData[uid].secs : [];
+  var log = getLog(uid);
+  var g=0,y=0,r=0,n=0;
+  secs.forEach(function(sec){
+    sec.kpis.forEach(function(k){
+      var entries = log[k.id]||[];
+      var a = entries.length ? entries[0].val : '';
+      var sv = getSem(k.m,a,k.t);
+      if(sv==='green')g++; else if(sv==='yellow')y++; else if(sv==='red')r++; else n++;
+    });
+  });
+  return {g:g,y:y,r:r,n:n};
+}
+
+function statsHtml(g,y,r,n){
+  var tot=g+y+r+n, pct=tot>0?Math.round((g+y+r)/tot*100):0;
+  return '<div class="sbar">'+
+    '<div class="sc"><div class="dot dg"></div><div><div class="sn" style="color:#16A34A">'+g+'</div><div class="sl">Verde</div></div></div>'+
+    '<div class="sc"><div class="dot dy"></div><div><div class="sn" style="color:#D97706">'+y+'</div><div class="sl">Atencion</div></div></div>'+
+    '<div class="sc"><div class="dot dr"></div><div><div class="sn" style="color:#EF4444">'+r+'</div><div class="sl">Revisar L10</div></div></div>'+
+    '<div class="sc"><div class="dot dn"></div><div><div class="sn" style="color:#94A3B8">'+n+'</div><div class="sl">Sin dato</div></div></div>'+
+    '<div class="pgw"><div class="pgl">Completitud</div>'+
+    '<div class="pgt"><div class="pgf" style="width:'+pct+'%"></div></div>'+
+    '<div class="pgn">'+pct+'%</div></div></div>';
+}
+
+// ============================================================
+// DIRECTOR VIEW
+// ============================================================
+function renderDir(){
+  var uids = Object.keys(USERS).filter(function(u){ return !USERS[u].isDir; });
+  var tg=0,ty=0,tr=0,tn=0;
+  uids.forEach(function(uid){ var s=calcStats(uid); tg+=s.g;ty+=s.y;tr+=s.r;tn+=s.n; });
+  var html = statsHtml(tg,ty,tr,tn) + '<div class="dir-grid">';
+  var areas=['ventas','supply','cx','logis','admin'];
+  areas.forEach(function(area){
+    var inA = uids.filter(function(u){ return USERS[u].area===area; });
+    if(!inA.length) return;
+    html += '<div class="dir-sec">'+AL[area]+'</div>';
+    inA.forEach(function(uid){
+      var u=USERS[uid], s=calcStats(uid);
+      var ov=s.r>0?'red':s.y>0?'yellow':s.g>0?'green':'none';
+      var ovc={green:'#16A34A',yellow:'#D97706',red:'#EF4444',none:'#CBD5E1'}[ov];
+      var ovl={green:'En camino',yellow:'Atencion',red:'Revisar L10',none:'Sin datos'}[ov];
+      var tot=(appData[uid]?appData[uid].secs:[]).reduce(function(a,sec){return a+sec.kpis.length;},0);
+      html += '<div class="dcard" data-uid="'+uid+'">'+
+        '<div class="dtop"><div class="dav" style="background:'+u.color+'">'+u.ini+'</div>'+
+        '<div><div class="dname">'+u.name+'</div><div class="drole">'+u.role+'</div></div></div>'+
+        '<div class="dsems">'+
+        '<div class="dsem"><div class="dot dg"></div>'+s.g+'</div>'+
+        '<div class="dsem"><div class="dot dy"></div>'+s.y+'</div>'+
+        '<div class="dsem"><div class="dot dr"></div>'+s.r+'</div>'+
+        (s.n?'<div class="dsem"><div class="dot dn"></div>'+s.n+'</div>':'')+
+        '</div><div class="dfoot"><div class="dot" style="background:'+ovc+';width:8px;height:8px;border-radius:50%"></div>'+
+        '<span style="color:'+ovc+'">'+ovl+'</span>'+
+        '<span style="margin-left:auto;font-size:9px;color:#CBD5E1">'+tot+' KPIs ver</span></div></div>';
+    });
+  });
+  html += '</div><div style="height:2rem"></div>';
+  document.getElementById('main').innerHTML = html;
+  document.querySelectorAll('.dcard').forEach(function(el){
+    el.addEventListener('click', function(){ showUser(this.getAttribute('data-uid')); });
+  });
+}
+
+function showUser(uid){ dirView=uid; renderApp(); }
+
+// ============================================================
+// USER DASHBOARD
+// ============================================================
+function renderUserDash(uid){
+  var d = appData[uid];
+  if(!d){ document.getElementById('main').innerHTML='<p>Sin datos</p>'; return; }
+  var secs = d.secs;
+  var log = getLog(uid);
+  var isOwner = (!curUser.isDir && uid===curUser.id);
+  var st = calcStats(uid);
+  var html = '';
+  if(curUser.isDir && dirView){
+    html += '<button class="btn-back" id="backbtn">&#8592; Volver</button>';
+  }
+  html += statsHtml(st.g,st.y,st.r,st.n);
+
+  // Left panel (resp + ifaces + cad) - shared across all secs of user
+  var leftHtml = buildLeft(d,uid);
+
+  secs.forEach(function(sec,si){
+    html += buildSec(sec,si,uid,log,isOwner,leftHtml);
+    leftHtml = ''; // only show left panel on first section
+  });
+  if(editMode && curUser.isDir){
+    html += '<button class="addbtn" style="border-radius:10px;padding:10px;font-size:12px" data-uid="'+uid+'" data-action="addsec">+ Agregar seccion</button>';
+  }
+  html += '<div style="height:2rem"></div>';
+  document.getElementById('main').innerHTML = html;
+
+  // Wire back button
+  var bb = document.getElementById('backbtn');
+  if(bb) bb.addEventListener('click', function(){ dirView=null; renderApp(); });
+
+  // Wire dynamic events
+  wireEvents(uid);
+}
+
+function buildLeft(d,uid){
+  var inEdit = editMode && curUser.isDir;
+  var html = '';
+
+  // Responsibilities
+  html += '<div class="mlbl">Responsabilidades</div><div class="rlist">';
+  if(inEdit){
+    d.resp.forEach(function(rv,ri){
+      html += '<div class="erow">'+
+        '<div class="rbul" style="flex-shrink:0"></div>'+
+        '<input class="einp" type="text" value="'+esc(rv)+'" data-uid="'+uid+'" data-action="setr" data-ri="'+ri+'" style="flex:1;font-size:11px">'+
+        '<button class="delbtn" data-uid="'+uid+'" data-action="delr" data-ri="'+ri+'">x</button></div>';
+    });
+    html += '<button class="addbtn" data-uid="'+uid+'" data-action="addr">+ Responsabilidad</button>';
+  } else {
+    d.resp.forEach(function(rv){
+      html += '<div class="ritem"><div class="rbul"></div><div>'+esc(rv)+'</div></div>';
+    });
+  }
+  html += '</div>';
+
+  // Interfaces
+  html += '<div class="mlbl" style="margin-top:12px">Interfaces</div><div class="iflist">';
+  d.ifaces.forEach(function(ifc,ii){
+    html += '<div class="ifitem"><div class="ifbadge" style="background:'+ifc.c+'">'+esc(ifc.a)+'</div>'+
+      (inEdit?
+        '<input class="einp" type="text" value="'+esc(ifc.d)+'" data-uid="'+uid+'" data-action="setifd" data-ii="'+ii+'" style="font-size:10px;margin-top:3px">':
+        '<div class="ifdesc">'+esc(ifc.d)+'</div>')+
+      '</div>';
+  });
+  html += '</div>';
+
+  // Cadence
+  html += '<div class="mlbl" style="margin-top:12px">Cadencia de gestion</div><div class="cadgrid">';
+  [['d','DIARIO','cad-d'],['s','SEMANAL','cad-s'],['m','MENSUAL','cad-m']].forEach(function(ci){
+    var txt = d.cad[ci[0]]||'';
+    html += '<div class="caditem"><div class="cadlbl '+ci[2]+'">'+ci[1]+'</div>';
+    if(inEdit){
+      html += '<textarea class="eta cadtxt" style="min-height:40px" data-uid="'+uid+'" data-action="setcad" data-ck="'+ci[0]+'">'+esc(txt)+'</textarea>';
+    } else {
+      html += '<div class="cadtxt '+(txt?'':'cadmt')+'">'+esc(txt||'--')+'</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function buildSec(sec,si,uid,log,isOwner,leftHtml){
+  var inEdit = editMode && curUser.isDir;
+  var g=0,y=0,r=0;
+  sec.kpis.forEach(function(k){
+    var entries=log[k.id]||[];
+    var a=entries.length?entries[0].val:'';
+    var sv=getSem(k.m,a,k.t);
+    if(sv==='green')g++; else if(sv==='yellow')y++; else if(sv==='red')r++;
+  });
+  var sgH = g>0?'<div class="ssem"><div class="dot dg"></div>'+g+'</div>':'';
+  var syH = y>0?'<div class="ssem"><div class="dot dy"></div>'+y+'</div>':'';
+  var srH = r>0?'<div class="ssem"><div class="dot dr"></div>'+r+'</div>':'';
+  var alertH = sec.alert?'<div class="sec-alert"><span>!</span><div>'+esc(sec.alert)+'</div></div>':'';
+
+  var titleH = inEdit?
+    '<input class="einp" type="text" value="'+esc(sec.s)+'" data-uid="'+uid+'" data-si="'+si+'" data-action="setsect" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px">':
+    '<div class="sec-title">'+esc(sec.s)+'</div>';
+
+  var kpiRows = '';
+  sec.kpis.forEach(function(k,ki){
+    kpiRows += buildKpiRow(k,ki,si,uid,log,isOwner,inEdit,sec.c);
+  });
+  if(inEdit){
+    kpiRows += '<button class="addbtn" data-uid="'+uid+'" data-si="'+si+'" data-action="addkpi">+ KPI</button>';
+  }
+
+  return '<div class="seccard" style="border-left:4px solid '+sec.c+'">'+
+    '<div class="sec-hd">'+
+    '<div style="flex:1;min-width:0">'+titleH+
+    '<div class="sec-resp">'+esc(sec.responsable||'')+(sec.sub?'<span class="sec-sub">'+esc(sec.sub)+'</span>':'')+'</div>'+
+    (inEdit?'<textarea class="eta sec-desc" style="min-height:44px;margin-top:5px" data-uid="'+uid+'" data-si="'+si+'" data-action="setsecdesc">'+esc(sec.desc||'')+'</textarea>':
+             '<div class="sec-desc">'+esc(sec.desc||'')+'</div>')+
+    alertH+'</div>'+
+    '<div class="sec-sems">'+sgH+syH+srH+'</div>'+
+    '</div>'+
+    '<div class="sec-bd">'+
+    (leftHtml?'<div class="sec-l">'+leftHtml+'</div>':'<div class="sec-l" style="display:none"></div>')+
+    '<div class="sec-r">'+kpiRows+'</div>'+
+    '</div></div>';
+}
+
+function buildKpiRow(k,ki,si,uid,log,isOwner,inEdit,secColor){
+  var entries = log[k.id]||[];
+  var a = entries.length ? entries[0].val : '';
+  var s=getSem(k.m,a,k.t), pr=getProg(k.m,a,k.t);
+  var dvStr=getDv(k.m,a), dvCls=getDvC(k.m,a,k.t);
+  var fcCls={Diario:'kb-d',Semanal:'kb-s',Mensual:'kb-m',Quincenal:'kb-q'}[k.f]||'kb-m';
+  var tipoCls={MAX:'kb-max',MIN:'kb-min',MAN:'kb-man'}[k.t]||'kb-man';
+  var tipoLbl={MAX:'Max',MIN:'Min',MAN:'Mantener'}[k.t]||'';
+  var stCls={green:'st-g',yellow:'st-y',red:'st-r',none:'st-n'}[s];
+  var stTxt={green:'En objetivo',yellow:'Atencion',red:'Revisar L10',none:'Sin datos'}[s];
+  var numStr = k.n<10?'0'+k.n:String(k.n);
+  var scC={green:'#16A34A',yellow:'#D97706',red:'#EF4444',none:'#CBD5E1'}[s];
+
+  var nameH = inEdit?
+    '<input class="einp" type="text" value="'+esc(k.l)+'" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setkname" style="font-size:12px;font-weight:700;margin-bottom:2px">':
+    '<div class="kname">'+esc(k.l)+'</div>';
+  var descH = inEdit?
+    '<textarea class="eta kdesc" style="min-height:34px;margin-bottom:4px" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setkdesc">'+esc(k.d)+'</textarea>':
+    '<div class="kdesc">'+esc(k.d)+'</div>';
+
+  var freqH = inEdit?
+    '<select class="esel" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setkfreq">'+
+    ['Diario','Semanal','Mensual','Quincenal'].map(function(v){ return '<option value="'+v+'"'+(k.f===v?' selected':'')+'>'+v+'</option>'; }).join('')+
+    '</select>':
+    '<span class="kb kbf '+fcCls+'">'+esc(k.f)+'</span>';
+  var tipoH = inEdit?
+    '<select class="esel" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setktype">'+
+    ['MAX','MIN','MAN'].map(function(v){ return '<option value="'+v+'"'+(k.t===v?' selected':'')+'>'+v+'</option>'; }).join('')+
+    '</select>':
+    '<span class="kb kbf '+tipoCls+'">'+tipoLbl+'</span>';
+
+  var metaH = inEdit?
+    '<div style="display:flex;align-items:center;gap:5px;margin-top:3px">'+
+    '<span class="kmeta">Meta:</span>'+
+    '<input class="enum" type="number" step="any" value="'+(k.m!==null?k.m:'')+'" placeholder="null" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setkmeta">'+
+    '<input class="einp" type="text" value="'+esc(k.u)+'" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="setkunit" style="width:60px;font-size:10px">'+
+    '</div>':
+    '<div class="kmeta">Meta: <strong>'+fmtM(k.m,k.fmt)+'</strong> '+esc(k.u)+'</div>';
+
+  // Right column
+  var rightH = '';
+  if(inEdit){
+    rightH = '<button class="delbtn" style="align-self:flex-start" data-uid="'+uid+'" data-si="'+si+'" data-ki="'+ki+'" data-action="delkpi">x Eliminar</button>';
+  } else if(a!==''&&a!==undefined){
+    rightH = '<div class="kval">'+fmtA(a,k.fmt)+' <span style="font-size:9px;color:#94A3B8">'+esc(k.u)+'</span></div>'+
+      (entries[0].ts?'<div class="kdate">'+fmtDt(entries[0].ts)+'</div>':'');
+  } else {
+    rightH = '<div class="kno">sin registros</div>';
+  }
+
+  if(!inEdit){
+    rightH += '<button class="kreg" data-action="kreg" data-uid="'+uid+'" data-kid="'+k.id+'" data-fmt="'+k.fmt+'" data-type="'+k.t+'">+ Registrar</button>';
+    rightH += '<div id="kform_'+uid+'_'+k.id+'" style="display:none"></div>';
+  }
+
+  rightH += '<div class="kpb"><div class="kp kp-'+s[0]+'" style="width:'+pr+'%"></div></div>'+
+    '<div class="ksem"><div class="ksd" style="background:'+scC+'"></div>'+
+    '<div class="kst '+stCls+'">'+stTxt+'</div>'+
+    (dvStr?'<span class="kdv '+dvCls+'">'+dvStr+'</span>':'')+
+    '</div>';
+
+  // History — shown always; director can delete entries
+  if(entries.length > 0){
+    var openByDefault = inEdit; // expand automatically in edit mode
+    rightH += '<button class="klogt" data-histid="khist_'+uid+'_'+k.id+'">'+(openByDefault?'&#9660;':'&#9654;')+' '+entries.length+' registro'+(entries.length>1?'s':'')+'</button>';
+    rightH += '<div id="khist_'+uid+'_'+k.id+'" style="display:'+(openByDefault?'':'none')+'" class="kloglist">';
+    entries.forEach(function(e,ei){
+      var es=getSem(k.m,e.val,k.t);
+      var esc2={green:'#16A34A',yellow:'#D97706',red:'#EF4444',none:'#CBD5E1'}[es];
+      rightH += '<div class="kloge">'+
+        '<div class="kloge-top">'+
+        '<div class="ksd" style="background:'+esc2+'"></div>'+
+        '<div class="kloge-val">'+fmtA(e.val,k.fmt)+' '+esc(k.u)+'</div>'+
+        '<div class="kloge-dt">'+fmtDt(e.ts)+'</div>'+
+        (curUser.isDir?'<button class="delbtn" style="margin-left:auto;padding:1px 6px;font-size:9px" data-action="dellog" data-uid="'+uid+'" data-kid="'+k.id+'" data-ei="'+ei+'" title="Eliminar este registro">x</button>':'')+
+        '</div>'+
+        (inEdit&&curUser.isDir?
+          '<input class="einp" type="number" step="any" value="'+e.val+'" data-action="editlogval" data-uid="'+uid+'" data-kid="'+k.id+'" data-ei="'+ei+'" style="font-size:11px;font-weight:800;margin-bottom:3px">'+
+          '<input class="einp" type="text" value="'+esc(e.nota||'')+'" placeholder="nota..." data-action="editlognota" data-uid="'+uid+'" data-kid="'+k.id+'" data-ei="'+ei+'" style="font-size:10px">':
+          (e.nota?'<div class="kloge-nota">'+esc(e.nota)+'</div>':'')
+        )+
+        '<div class="kloge-who">por '+esc(e.user)+'</div></div>';
+    });
+    rightH += '</div>';
+  }
+
+  return '<div class="krow"><div class="krt">'+
+    '<div class="knum" style="background:'+secColor+'">'+numStr+'</div>'+
+    '<div>'+nameH+descH+'<div class="kbgs">'+freqH+tipoH+'</div>'+metaH+'</div>'+
+    '<div class="krc">'+rightH+'</div>'+
+    '</div></div>';
+}
+
+// ============================================================
+// WIRE EVENTS — single handler, no accumulation
+// ============================================================
+var _activeUid = null;
+var _wired = false;
+
+function wireEvents(uid){
+  _activeUid = uid;
+  if(_wired) return;  // only wire once ever
+  _wired = true;
+
+  var main = document.getElementById('main');
+
+  // ── Clicks ───────────────────────────────────────────────────
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-action]');
+    if(!el) return;
+    // Only handle if inside #main
+    if(!document.getElementById('main').contains(el)) return;
+
+    var uid = _activeUid;
+    var action = el.getAttribute('data-action');
+    var si = parseInt(el.getAttribute('data-si'));
+    var ki = parseInt(el.getAttribute('data-ki'));
+    var ri = parseInt(el.getAttribute('data-ri'));
+    var elUid = el.getAttribute('data-uid') || uid;
+
+    if(action==='addr'){
+      appData[uid].resp.push('Nueva responsabilidad');
+      renderUserDash(uid);
+    }
+    else if(action==='delr'){
+      appData[uid].resp.splice(ri,1);
+      renderUserDash(uid);
+    }
+    else if(action==='addsec'){
+      addSection(elUid);
+    }
+    else if(action==='addkpi'){
+      addKpi(uid,si);
+    }
+    else if(action==='delkpi'){
+      if(confirm('Eliminar este KPI?')){
+        appData[uid].secs[si].kpis.splice(ki,1);
+        renderUserDash(uid);
+      }
+    }
+    else if(action==='kreg'){
+      var kid=el.getAttribute('data-kid');
+      var fmt=el.getAttribute('data-fmt');
+      var dtype=el.getAttribute('data-type');
+      showLogForm(uid,kid,fmt,dtype,el);
+    }
+    else if(action==='dellog'){
+      var kid2=el.getAttribute('data-kid');
+      var ei=parseInt(el.getAttribute('data-ei'));
+      if(!confirm('Eliminar este registro?')) return;
+      var log2=getLog(uid);
+      if(log2[kid2]){ log2[kid2].splice(ei,1); saveLog(uid,log2); }
+      renderUserDash(uid);
+    }
+  });
+
+  // ── klogt toggle (class-based, no data-action) ────────────────
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('.klogt');
+    if(!el) return;
+    if(!document.getElementById('main').contains(el)) return;
+    var hid = el.getAttribute('data-histid');
+    var hel = document.getElementById(hid);
+    if(hel){
+      var open = hel.style.display!=='none';
+      hel.style.display = open?'none':'';
+      el.innerHTML = (open?'&#9654;':'&#9660;') + el.innerHTML.slice(1);
+    }
+  });
+
+  // ── Input/Change ─────────────────────────────────────────────
+  document.addEventListener('input', function(e){
+    var el = e.target.closest('[data-action]');
+    if(!el) return;
+    if(!document.getElementById('main').contains(el)) return;
+
+    var uid = _activeUid;
+    var action = el.getAttribute('data-action');
+    var elUid = el.getAttribute('data-uid') || uid;
+    var si = parseInt(el.getAttribute('data-si'));
+    var ki = parseInt(el.getAttribute('data-ki'));
+    var ri = parseInt(el.getAttribute('data-ri'));
+    var ii = parseInt(el.getAttribute('data-ii'));
+    var v = el.value;
+
+    if(action==='editlogval'){
+      var kid3=el.getAttribute('data-kid'); var ei3=parseInt(el.getAttribute('data-ei'));
+      var log3=getLog(uid); if(log3[kid3]&&log3[kid3][ei3]) log3[kid3][ei3].val=parseFloat(v)||0; saveLog(uid,log3);
+    }
+    else if(action==='editlognota'){
+      var kid4=el.getAttribute('data-kid'); var ei4=parseInt(el.getAttribute('data-ei'));
+      var log4=getLog(uid); if(log4[kid4]&&log4[kid4][ei4]) log4[kid4][ei4].nota=v; saveLog(uid,log4);
+    }
+    else if(action==='setr')      appData[elUid].resp[ri]=v;
+    else if(action==='setifd')    appData[elUid].ifaces[ii].d=v;
+    else if(action==='setcad')    appData[elUid].cad[el.getAttribute('data-ck')]=v;
+    else if(action==='setsect')   appData[elUid].secs[si].s=v;
+    else if(action==='setsecdesc')appData[elUid].secs[si].desc=v;
+    else if(action==='setkname')  appData[elUid].secs[si].kpis[ki].l=v;
+    else if(action==='setkdesc')  appData[elUid].secs[si].kpis[ki].d=v;
+    else if(action==='setkunit')  appData[elUid].secs[si].kpis[ki].u=v;
+    else if(action==='setkmeta')  appData[elUid].secs[si].kpis[ki].m=v===''?null:parseFloat(v);
+  });
+
+  document.addEventListener('change', function(e){
+    var el = e.target.closest('[data-action]');
+    if(!el) return;
+    if(!document.getElementById('main').contains(el)) return;
+    var elUid = el.getAttribute('data-uid') || _activeUid;
+    var si = parseInt(el.getAttribute('data-si'));
+    var ki = parseInt(el.getAttribute('data-ki'));
+    var action = el.getAttribute('data-action');
+    if(action==='setkfreq') appData[elUid].secs[si].kpis[ki].f=el.value;
+    else if(action==='setktype') appData[elUid].secs[si].kpis[ki].t=el.value;
+  });
+}
+
+function addSection(uid){
+  appData[uid].secs.push({
+    id:'s'+Date.now(), s:'Nueva Seccion', c:'#94A3B8', desc:'Descripcion', alert:'',
+    responsable:'Responsable', sub:'',
+    kpis:[{id:'k'+Date.now(),n:1,l:'KPI 1',d:'Descripcion',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'}]
+  });
+  renderUserDash(uid);
+}
+function addKpi(uid,si){
+  var sec = appData[uid].secs[si];
+  sec.kpis.push({id:'k'+Date.now(),n:sec.kpis.length+1,l:'Nuevo KPI',d:'Descripcion del objetivo',m:100,t:'MAX',u:'%',f:'Mensual',fmt:'pct'});
+  renderUserDash(uid);
+}
+
+// ============================================================
+// LOG FORM
+// ============================================================
+function showLogForm(uid,kid,fmt,dtype,triggerEl){
+  var formId = 'kform_'+uid+'_'+kid;
+  var el = document.getElementById(formId);
+  if(!el) return;
+  var isUsd = (fmt==='usd');
+  var who = curUser.isDir ? 'Director' : curUser.name;
+
+  var html = '<div class="kform">'+
+    '<div class="kform-lbl">Registrar avance</div>'+
+    '<div class="frow"><div class="flbl">Fecha</div>'+
+    '<input class="finp" type="date" id="lfd_'+kid+'" value="'+todayStr()+'"></div>'+
+    '<div class="frow"><div class="flbl">Valor</div>'+
+    '<input class="finp" type="number" step="any" id="lfv_'+kid+'" placeholder="ingresar..."></div>'+
+    (isUsd?
+      '<div class="frow"><div class="flbl">O en ARS</div>'+
+      '<input class="finp" type="number" step="any" id="lfa_'+kid+'" placeholder="importe en ARS...">'+
+      '</div><div class="fconv" id="lfc_'+kid+'">TC: '+tc+' ARS/USD</div>':'')+
+    '<div class="flbl" style="margin-top:4px">Nota o comentario</div>'+
+    '<textarea class="fta" id="lfn_'+kid+'" rows="2" placeholder="Contexto, observacion, causa..."></textarea>'+
+    '<div class="fbr">'+
+    '<button class="fsave" id="lfsave_'+kid+'">Guardar</button>'+
+    '<button class="fcanc" id="lfcanc_'+kid+'">Cancelar</button>'+
+    '</div></div>';
+
+  el.innerHTML = html;
+  el.style.display = '';
+  if(triggerEl) triggerEl.style.display='none';
+
+  // ARS conversion
+  var arsEl = document.getElementById('lfa_'+kid);
+  if(arsEl){
+    arsEl.addEventListener('input', function(){
+      var ars=parseFloat(this.value)||0;
+      var usd=ars/tc;
+      document.getElementById('lfv_'+kid).value = ars>0?usd.toFixed(2):'';
+      document.getElementById('lfc_'+kid).textContent = ars>0?(ars.toLocaleString('es-AR')+' ARS / '+tc+' = USD '+usd.toFixed(2)):'TC: '+tc+' ARS/USD';
+    });
+  }
+
+  document.getElementById('lfsave_'+kid).addEventListener('click', function(){
+    var valEl=document.getElementById('lfv_'+kid);
+    if(!valEl||valEl.value==='') return;
+    var dateStr=document.getElementById('lfd_'+kid).value;
+    var nota=(document.getElementById('lfn_'+kid).value||'').trim();
+    var ts=dateStr+'T'+new Date().toTimeString().slice(0,5);
+    var log=getLog(uid);
+    if(!log[kid]) log[kid]=[];
+    log[kid].unshift({ts:ts,val:parseFloat(valEl.value),nota:nota,user:who});
+    saveLog(uid,log);
+    renderUserDash(uid);
+  });
+
+  document.getElementById('lfcanc_'+kid).addEventListener('click', function(){
+    el.style.display='none';
+    if(triggerEl) triggerEl.style.display='';
+  });
+}
+
+// ============================================================
+// REPORT
+// ============================================================
+function genReport(){
+  var uids = dirView ? [dirView] : Object.keys(USERS).filter(function(u){ return !USERS[u].isDir; });
+  var now = new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Reporte Carrello Q2 2026</title>'+
+    '<style>body{font-family:system-ui,sans-serif;padding:2rem;color:#0F172A;font-size:13px;max-width:1000px;margin:0 auto}'+
+    'h1{font-size:22px;font-weight:800;margin-bottom:4px}.sub{color:#64748B;font-size:12px;margin-bottom:2rem}'+
+    '.us{margin-bottom:2rem;break-inside:avoid}'+
+    '.uh{display:flex;align-items:center;gap:12px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px 16px;margin-bottom:10px}'+
+    '.av{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}'+
+    '.stl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:7px 0 3px;color:#64748B;border-bottom:1px solid #F1F5F9;margin-bottom:6px}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px}'+
+    'th{text-align:left;padding:4px 7px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#94A3B8;border-bottom:2px solid #E2E8F0}'+
+    'td{padding:5px 7px;border-bottom:1px solid #F8FAFC;vertical-align:top}'+
+    'tr:last-child td{border-bottom:none}'+
+    '.sg{color:#16A34A;font-weight:700}.sy{color:#D97706;font-weight:700}.sr{color:#EF4444;font-weight:700}.sn{color:#94A3B8}'+
+    '.nota{color:#64748B;font-style:italic;font-size:10px}</style>'+
+    '</head><body><h1>Carrello - Reporte KPIs Q2 2026</h1>'+
+    '<div class="sub">Generado el '+now+' - TC: $'+tc+' ARS/USD - Sistema EOS</div>';
+
+  uids.forEach(function(uid){
+    var u=USERS[uid];
+    var secs=appData[uid]?appData[uid].secs:[];
+    var log=getLog(uid);
+    var s=calcStats(uid);
+    html += '<div class="us"><div class="uh"><div class="av" style="background:'+u.color+'">'+u.ini+'</div>'+
+      '<div><div style="font-size:15px;font-weight:800">'+u.name+'</div><div style="font-size:11px;color:#64748B">'+u.role+'</div></div>'+
+      '<div style="margin-left:auto;font-size:12px"><span class="sg">'+s.g+' verde</span>  '+
+      '<span class="sy">'+s.y+' atencion</span>  <span class="sr">'+s.r+' revisar</span>  <span class="sn">'+s.n+' sin dato</span></div></div>';
+
+    secs.forEach(function(sec){
+      html += '<div class="stl">'+sec.s+'</div>'+
+        '<table><tr><th>#</th><th>KPI</th><th>Meta Q2</th><th>Ultimo registro</th><th>Fecha</th><th>Desvio</th><th>Estado</th><th>Nota</th></tr>';
+      sec.kpis.forEach(function(k){
+        var entries=log[k.id]||[];
+        var latest=entries.length?entries[0]:{val:'',ts:null,nota:''};
+        var sv=getSem(k.m,latest.val,k.t);
+        var dv=getDv(k.m,latest.val);
+        var scls={green:'sg',yellow:'sy',red:'sr',none:'sn'}[sv];
+        var slbl={green:'En objetivo',yellow:'Atencion',red:'Revisar L10',none:'Sin datos'}[sv];
+        html += '<tr><td style="font-weight:700">'+k.n+'</td>'+
+          '<td><strong>'+esc(k.l)+'</strong><br><span style="color:#94A3B8;font-size:10px">'+esc(k.d)+'</span></td>'+
+          '<td>'+fmtM(k.m,k.fmt)+' '+esc(k.u)+'</td>'+
+          '<td style="font-weight:700">'+(latest.val!==''&&latest.val!==undefined?fmtA(latest.val,k.fmt)+' '+esc(k.u):'--')+'</td>'+
+          '<td>'+(latest.ts?fmtDt(latest.ts):'--')+'</td>'+
+          '<td>'+(dv||'--')+'</td>'+
+          '<td class="'+scls+'">'+slbl+'</td>'+
+          '<td class="nota">'+esc(latest.nota||'')+(entries.length>1?' (+'+String(entries.length-1)+' prev.)':'')+'</td></tr>';
+      });
+      html += '</table>';
+    });
+    html += '</div>';
+  });
+  html += '</body></html>';
+  var w=window.open('','_blank');
+  if(w){ w.document.write(html); w.document.close(); setTimeout(function(){ w.print(); },600); }
+}
+
+// ============================================================
+// SHARE MODAL
+// ============================================================
+function showShare(){
+  var pinRows = Object.keys(PINS).map(function(p){
+    var u=USERS[PINS[p]];
+    return '<tr><td>'+u.name+'</td><td><strong style="font-family:monospace">'+p+'</strong></td></tr>';
+  }).join('');
+  var o=document.createElement('div');
+  o.id='sharemodal';
+  o.innerHTML='<div class="overlay" id="shareoverlay">'+
+    '<div class="modal">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'+
+    '<h2>Compartir la app</h2>'+
+    '<button id="sharecls" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;line-height:1">&times;</button></div>'+
+    '<p>Archivo HTML unico. Funciona en cualquier navegador, sin internet ni registro.</p>'+
+    '<div class="mstep"><div class="mnum">1</div><div class="mtxt"><strong>Netlify (recomendado - gratis)</strong>'+
+    'netlify.com - Add new site - Deploy manually - arrastrar el HTML. URL:'+
+    '<code class="murl">https://carrello-kpis.netlify.app</code>'+
+    'Compartir por WhatsApp con los 20 colaboradores.</div></div>'+
+    '<div class="mstep"><div class="mnum">2</div><div class="mtxt"><strong>Google Drive</strong>'+
+    'Subir el .html a Drive y compartir link de descarga. Cada uno lo abre con Chrome.</div></div>'+
+    '<div class="mstep"><div class="mnum">3</div><div class="mtxt"><strong>Instalar como app desktop (Chrome)</strong>'+
+    'Abrir en Chrome - menu ... - Guardar e instalar - Instalar. Queda como app nativa.</div></div>'+
+    '<div style="margin-top:1rem;font-size:12px;font-weight:700;color:#0F172A;margin-bottom:6px">PINs de acceso</div>'+
+    '<table class="ptbl"><tr><th>Colaborador</th><th>PIN</th></tr>'+pinRows+'</table>'+
+    '<button class="mcls" id="sharecls2">Cerrar</button>'+
+    '</div></div>';
+  document.body.appendChild(o);
+  document.getElementById('sharecls').addEventListener('click',function(){ o.remove(); });
+  document.getElementById('sharecls2').addEventListener('click',function(){ o.remove(); });
+  document.getElementById('shareoverlay').addEventListener('click',function(e){ if(e.target===this) o.remove(); });
+}
+</script>
+</body>
+</html>
